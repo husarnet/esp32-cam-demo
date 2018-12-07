@@ -93,6 +93,7 @@ struct http_context_ {
 
 struct http_server_context_ {
     int port;
+    int ip6;
     err_t server_task_err;
     struct netconn* server_conn;
     TaskHandle_t task;
@@ -723,13 +724,13 @@ static void http_server(void *arg)
     http_server_t ctx = (http_server_t) arg;
     struct netconn *client_conn;
     err_t err;
-    ctx->server_conn = netconn_new(NETCONN_TCP);
+    ctx->server_conn = netconn_new(ctx->ip6 ? NETCONN_TCP_IPV6 : NETCONN_TCP);
     if (ctx->server_conn == NULL) {
         err = ERR_MEM;
         goto out;
     }
 
-    err = netconn_bind(ctx->server_conn, NULL, ctx->port);
+    err = netconn_bind(ctx->server_conn, ctx->ip6 ? IP6_ADDR_ANY : NULL, ctx->port);
     if (err != ERR_OK) {
         goto out;
     }
@@ -768,6 +769,7 @@ esp_err_t http_server_start(const http_server_options_t* options, http_server_t*
     }
 
     ctx->port = options->port;
+    ctx->ip6 = options->ip6;
     ctx->start_done = xEventGroupCreate();
     if (ctx->start_done == NULL) {
         free(ctx);

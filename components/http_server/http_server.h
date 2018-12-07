@@ -55,6 +55,7 @@ typedef struct {
     int task_affinity;      /*!< Server task affinity (CPU number of tskNO_AFFINITY */
     int task_stack_size;    /*!< Server task stack size, in bytes */
     int task_priority;      /*!< Server task priority */
+    int ip6;                /*!< Use IPv6? */
 } http_server_options_t;
 
 /** Default initializer for http_server_options_t */
@@ -63,6 +64,7 @@ typedef struct {
     .task_affinity = tskNO_AFFINITY, \
     .task_stack_size = 4096, \
     .task_priority = 1, \
+    .ip6 = 0, \
 }
 
 /**
