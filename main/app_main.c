@@ -57,6 +57,7 @@ static camera_pixelformat_t s_pixel_format;
 #define CAMERA_PIXEL_FORMAT CAMERA_PF_JPEG
 #define CAMERA_FRAME_SIZE CAMERA_FS_QQVGA
 
+void husarnet_websetup_start();
 
 void app_main()
 {
@@ -122,8 +123,13 @@ void app_main()
 //    databuf = (char *) malloc(BUF_SIZE);
     initialise_wifi();
 
+    // wait for a while to make sure the network device is created
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+
     http_server_t server;
     http_server_options_t http_options = HTTP_SERVER_OPTIONS_DEFAULT();
+    http_options.ip6 = 1;
+
     ESP_ERROR_CHECK( http_server_start(&http_options, &server) );
 
     if (s_pixel_format == CAMERA_PF_GRAYSCALE) {
@@ -345,5 +351,7 @@ static void initialise_wifi(void)
     ESP_LOGI(TAG, "Connecting to \"%s\"", wifi_config.sta.ssid);
     xEventGroupWaitBits(s_wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
     ESP_LOGI(TAG, "Connected");
+
+    husarnet_websetup_start();
 }
 
