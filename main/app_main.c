@@ -34,6 +34,7 @@
 #include "http_server.h"
 #include "led.h"
 #include "qr_recoginize.h"
+static void handle_main(http_context_t http_ctx, void* ctx);
 static void handle_grayscale_pgm(http_context_t http_ctx, void* ctx);
 static void handle_rgb_bmp(http_context_t http_ctx, void* ctx);
 static void handle_rgb_bmp_stream(http_context_t http_ctx, void* ctx);
@@ -129,25 +130,29 @@ void app_main()
 
     http_server_t server;
     http_server_options_t http_options = HTTP_SERVER_OPTIONS_DEFAULT();
+    http_options.port = 8000;
     http_options.ip6 = 1;
 
     ESP_ERROR_CHECK( http_server_start(&http_options, &server) );
 
+    ESP_ERROR_CHECK( http_register_handler(server, "/index.html", HTTP_GET, HTTP_HANDLE_RESPONSE, &handle_main, NULL) );
+    ESP_ERROR_CHECK( http_register_handler(server, "/", HTTP_GET, HTTP_HANDLE_RESPONSE, &handle_main, NULL) );
+
     if (s_pixel_format == CAMERA_PF_GRAYSCALE) {
         ESP_ERROR_CHECK( http_register_handler(server, "/pgm", HTTP_GET, HTTP_HANDLE_RESPONSE, &handle_grayscale_pgm, &camera_config) );
-        ESP_LOGI(TAG, "Open http://" IPSTR "/pgm for a single image/x-portable-graymap image", IP2STR(&s_ip_addr));
+        ESP_LOGI(TAG, "Open /pgm for a single image/x-portable-graymap image");
     }
     if (s_pixel_format == CAMERA_PF_RGB565) {
         ESP_ERROR_CHECK( http_register_handler(server, "/bmp", HTTP_GET, HTTP_HANDLE_RESPONSE, &handle_rgb_bmp, NULL) );
-        ESP_LOGI(TAG, "Open http://" IPSTR "/bmp for single image/bitmap image", IP2STR(&s_ip_addr));
+        ESP_LOGI(TAG, "Open /bmp for single image/bitmap image");
         ESP_ERROR_CHECK( http_register_handler(server, "/bmp_stream", HTTP_GET, HTTP_HANDLE_RESPONSE, &handle_rgb_bmp_stream, NULL) );
-        ESP_LOGI(TAG, "Open http://" IPSTR "/bmp_stream for multipart/x-mixed-replace stream of bitmaps", IP2STR(&s_ip_addr));
+        ESP_LOGI(TAG, "Open /bmp_stream for multipart/x-mixed-replace stream of bitmaps");
     }
     if (s_pixel_format == CAMERA_PF_JPEG) {
         ESP_ERROR_CHECK( http_register_handler(server, "/jpg", HTTP_GET, HTTP_HANDLE_RESPONSE, &handle_jpg, NULL) );
-        ESP_LOGI(TAG, "Open http://" IPSTR "/jpg for single image/jpg image", IP2STR(&s_ip_addr));
+        ESP_LOGI(TAG, "Open /jpg for single image/jpg image");
         ESP_ERROR_CHECK( http_register_handler(server, "/jpg_stream", HTTP_GET, HTTP_HANDLE_RESPONSE, &handle_jpg_stream, NULL) );
-        ESP_LOGI(TAG, "Open http://" IPSTR "/jpg_stream for multipart/x-mixed-replace stream of JPEGs", IP2STR(&s_ip_addr));
+        ESP_LOGI(TAG, "Open /jpg_stream for multipart/x-mixed-replace stream of JPEGs");
     }
     ESP_LOGI(TAG, "Free heap: %u", xPortGetFreeHeapSize());
     ESP_LOGI(TAG, "Camera demo ready");
@@ -219,6 +224,21 @@ static void handle_rgb_bmp(http_context_t http_ctx, void* ctx)
     write_frame(http_ctx);
     http_response_end(http_ctx);
 }
+
+static void handle_main(http_context_t http_ctx, void* ctx)
+{
+    http_response_begin(http_ctx, 303, "text/plain", 2);
+    http_response_set_header(http_ctx, "location", "/jpg_stream");
+
+    http_buffer_t msg = {
+        .data = "ok",
+        .size = 2
+    };
+    http_response_write(http_ctx, &msg);
+
+    http_response_end(http_ctx);
+}
+
 
 static void handle_jpg(http_context_t http_ctx, void* ctx)
 {

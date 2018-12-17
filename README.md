@@ -1,6 +1,6 @@
 # ESP32 Camera Demo
 
-This is a demo based on https://github.com/donny681/ESP32_CAMERA_QR, slightly edited to work over Husarnet. For more information, see project on hackster.io.
+This is a demo based on https://github.com/donny681/ESP32_CAMERA_QR, slightly edited to work over Husarnet. For more information, see our project on hackster.io.
 
 ### Camera
 
