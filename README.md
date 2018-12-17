@@ -1,38 +1,12 @@
 # ESP32 Camera Demo
 
-Code provided in this repository gets the image from camera and prints it out as ASCII art to the serial port.
-
-## Function
-+ support OV2640 to output JPEG format .
-+ support OV2640 and OV7725 to output grayscale format.
-+ support QR recognize.
-
-## Components
-
-To make this code work, you need the following components:
-
-* This repository. It contains submodules, so make sure you clone it with `--recursive` option. If you have already cloned it without `--recursive`, run `git submodule update --init`.
-* [ESP32](https://espressif.com/en/products/hardware/esp32/overview) module
-* Camera module
-* PC with [esp-idf](https://github.com/espressif/esp-idf)
-
-See the following sections for more details.
-
+This is a demo based on https://github.com/donny681/ESP32_CAMERA_QR, slightly edited to work over Husarnet. For more information, see project on hackster.io.
 
 ### Camera
 
 This example has been tested with OV7725 and ov2640 camera modules. Use it, if this is your first exposure to interfacing a microcontroller with a camera.
 
 Other OV7xxx series should work as well, with some changes to camera configuration code. OV5xxx can work too, but it is advisable to choose the ones which support RGB or YUV 8-bit wide output bus. The ones which only output 10-bit raw data may be a bit harder to work with. Also choose the camera which can output a scaled down (QVGA or VGA) image. Use of larger frame buffers will require external SPI RAM.
-
-### Ai-Thinker CAM board
-
-Ai-Thinker Launch a camera board.This board contain camera interface,TF card and ESP32 with psram.It is very a samll module.The size of the board is 40mm * 26mm * 4mm.You can plug the camera in the board.We will sell this board in our [taobao](https://shop72165205.taobao.com/?spm=a230r.7195193.1997079397.26.Z8Ck3C).
-
-![Aithinker camera board](https://github.com/donny681/ESP32_CAMERA_QR/blob/master/pictures/back.jpg)
-![Aithinker camera board front](https://github.com/donny681/ESP32_CAMERA_QR/blob/master/pictures/front.jpg)
-![Aithinker camera board qr recognize](https://github.com/donny681/ESP32_CAMERA_QR/blob/master/pictures/aithinker_camer_board%20qr%20recognize.jpg)
-Also,if you have an ESP-WROVER-KIT,you can try this demo.
 
 ## Quick Start
 
